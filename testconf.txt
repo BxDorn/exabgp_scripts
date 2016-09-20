@@ -1,0 +1,25 @@
+group test {
+	process parsed-route-backend {
+		receive {
+			parsed;
+			update;
+		}
+		run /home/administrator/scripts/pd.py;
+		encoder json;
+	}	
+	neighbor 2001:db8:0:feed::1 {
+        	description "will announce a route protected by a MD5";
+        	router-id 192.168.1.222;
+        	local-address 2001:db8:0:feed::1000;
+        	local-as 65255;
+        	peer-as 65255;
+        	hold-time 180;
+        	md5 "map";
+		family {
+                        ipv6 unicast;
+		}
+		process {
+			receive-routes;
+		}
+	}
+}
