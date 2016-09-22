@@ -1,0 +1,32 @@
+# dhcpd6 - dhcpd6 job file
+
+#description "DHCPv6 instance of isc-dhcp-server"
+#author "Jordan Gottlieb <jordan.gottlieb@charter.com>"
+
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+lease_file=/var/lib/dhcp/dhcpd6.leases
+config_file=/etc/dhcp/dhcpd6.conf
+DHCPD6_PID=/var/run/dhcpd6.pid
+INTERFACES=eth0
+
+
+test -f /usr/sbin/dhcpd || exit 0
+
+case "$1" in
+        start)
+                #test_config
+                #log_daemon_msg "Starting $DESC" "DHCPD6"
+                start-stop-daemon --start --quiet --pidfile "$DHCPD6_PID" \
+                        --exec /usr/sbin/dhcpd -- \
+                        -q -6 -cf "$config_file" -lf "$lease_file" \
+                        -pf "$DHCPD6_PID" $INTERFACES
+                sleep 2
+                ;;
+        stop)
+                #log_daemon_msg "Stopping $DESC" "$NAME"
+                start-stop-daemon --stop --quiet --pidfile "$DHCPD6_PID"
+                #log_end_msg $?
+                rm -f "$DHCPD6_PID"
+                ;;
+        *)
+esac
